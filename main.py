@@ -4,7 +4,7 @@ import streamlit as st
 
 option = st.selectbox(
     "Pilih Deret",
-    ["Fibonacci", "Larik", "Bertingkat"],
+    ["Fibonacci", "Larik", "Bertingkat", "Berpola Berulang"],
     index=None,
     placeholder="Select contact method...",
 )
@@ -29,7 +29,7 @@ def smart_round_list(lst):
 
 def render(questions, answers):
     def randomize_list(list):
-        rand = [num + random.choice([-1, 0, 1]) for num in list]
+        rand = [num + random.choice([-2, -1, 0, 1, 2]) for num in list]
         return smart_round_list(rand)
     
     st.subheader(f'{question_spacer.join(map(str, smart_round_list(questions)))}, ...')
@@ -51,12 +51,12 @@ def render_larik(questions, answers, schemes):
             if s.startswith("+"):
                 base_s = int(s[1:])
                 p_a = answers[index] + random.choice(
-                    [-base_s, 0, base_s]
+                    [-base_s, 0, base_s, 1]
                 )
             if s.startswith("-"):
                 base_s = -(int(s[1:]))
                 p_a = answers[index] - random.choice(
-                    [-base_s, 0, base_s]
+                    [-base_s, 0, base_s, 1]
                 )
             if s.startswith("*"):
                 base_s = int(s[1:])
@@ -211,3 +211,58 @@ if option == "Bertingkat":
         answers = flatening(answers)
         
         render(questions, answers)
+
+
+if option == "Berpola Berulang":
+    col1 = st.columns(2)
+    a = col1[0].text_input('Jumlah Pola')
+    b = col1[1].text_input('Jumlah Kelipatan Pola Suku')
+    col2 = st.columns(2)
+    c = col2[0].text_input('Jumlah Total Suku', value=f'{int(a)*int(b) + 1}', disabled=True)
+    d = col2[1].text_input('Jumlah Suku Jawaban')
+    
+    if a.isdigit() and b.isdigit() and c.isdigit() and d.isdigit():
+        a = int(a)
+        b = int(b)
+        c = int(c)
+        d = int(d)
+        e = st.text_input('Angka Pertama')
+        e = convert_to_float(e)
+        
+        questions = []
+        questions.append(e)
+        
+        schemes = []
+        for i in range(a):
+            value_scheme = st.text_input(f'Pola Angka {i+1} (+5 atau -3 atau *2)')
+            schemes.append(value_scheme)
+        
+        if st.button('Buat Berpola Berhitung'):
+            for i in range(b):
+                for idx, sch in enumerate(schemes):
+                    last_number = questions[-1]
+                    if sch.startswith("+"):
+                        rb = last_number + float(sch[1:])
+                    if sch.startswith("-"):
+                        rb = last_number - float(sch[1:])
+                    if sch.startswith("*"):
+                        rb = last_number * float(sch[1:])
+                    questions.append(rb)
+            
+            answers = []
+            answers.append(questions[-1])
+            for i in range(d):
+                for idx, sch in enumerate(schemes):
+                    last_number = answers[-1]
+                    if sch.startswith("+"):
+                        rb = last_number + float(sch[1:])
+                    if sch.startswith("-"):
+                        rb = last_number - float(sch[1:])
+                    if sch.startswith("*"):
+                        rb = last_number * float(sch[1:])
+                    answers.append(rb)
+            
+            del answers[0]
+            questions = flatening(questions)
+            answers = flatening(answers)
+            render(questions, answers)
