@@ -263,6 +263,8 @@ if option == "Berpola Berulang":
                     answers.append(rb)
             
             del answers[0]
+            del answers[-d:]
+            
             questions = flatening(questions)
             answers = flatening(answers)
             render(questions, answers)
