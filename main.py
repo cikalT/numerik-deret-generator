@@ -435,9 +435,6 @@ if option == "Prima":
         
             questions = flatening(number_list[:-b])
             answers = flatening(number_list[-b:])
-            st.write(number_list)
-            # st.write(answers)
-            # patterns = set_prime_list
             patterns = [f'{f}{num}' for num in set_prime_list]
             render("Prima", questions, answers, patterns)
                 
