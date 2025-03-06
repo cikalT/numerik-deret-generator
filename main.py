@@ -157,7 +157,7 @@ if option == "Aritmatika":
                 number_list.append(ar)
         
             questions = flatening(number_list[:-b])
-            answers = flatening(number_list[-a:])
+            answers = flatening(number_list[-b:])
             patterns = [d]
             render("Aritmatika", questions, answers, patterns)
 
@@ -434,7 +434,9 @@ if option == "Prima":
                 number_list.append(ar)
         
             questions = flatening(number_list[:-b])
-            answers = flatening(number_list[-a:])
+            answers = flatening(number_list[-b:])
+            st.write(number_list)
+            # st.write(answers)
             # patterns = set_prime_list
             patterns = [f'{f}{num}' for num in set_prime_list]
             render("Prima", questions, answers, patterns)
