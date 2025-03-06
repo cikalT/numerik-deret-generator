@@ -13,6 +13,8 @@ option = st.selectbox(
     placeholder="Select contact method...",
 )
 
+st.error('Pastikan semua kolom sudah diisi!')
+
 spacer = ',    '
 question_spacer = ', '
 
@@ -79,11 +81,11 @@ def render(question_type, questions, answers, patterns):
     
     number_list = questions + answers
     if question_type in ["Bertingkat"]:
-        bertingkat(number_list)
+        bertingkat(number_list, len(answers))
     if question_type in ["Berpola Berulang", "Aritmatika", "Prima"]:
-        berpola_berulang(number_list, patterns)
+        berpola_berulang(number_list, len(answers), patterns)
     if question_type in ["Fibonacci"]:
-        fibonacci(number_list)
+        fibonacci(number_list, len(answers))
 
 def render_larik(question_type, questions, answers, patterns):
     def randomize_list_larik():
@@ -124,7 +126,7 @@ def render_larik(question_type, questions, answers, patterns):
     true_answer[0].subheader(f'{question_spacer.join(map(str, smart_round_list(answers)))}')
     
     number_list = questions + answers
-    larik(number_list, patterns)
+    larik(number_list, len(answers), patterns)
 
 if option == "Aritmatika":
     st.subheader('Aritmatika')
@@ -438,5 +440,3 @@ if option == "Prima":
             patterns = [f'{f}{num}' for num in set_prime_list]
             render("Prima", questions, answers, patterns)
                 
-        
-        # st.write(prime_list)

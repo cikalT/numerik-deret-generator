@@ -10,7 +10,7 @@ def render_explanation(plt, G, pos, labels, node_colors):
     # plt.title("Number Pattern Explanation")
     st.pyplot(plt)
 
-def bertingkat(number_list):
+def bertingkat(number_list, answer_count):
     first_diff = [number_list[i] - number_list[i-1] for i in range(1, len(number_list))]
     second_diff = [first_diff[i] - first_diff[i-1] for i in range(1, len(first_diff))]
 
@@ -39,11 +39,16 @@ def bertingkat(number_list):
         G.add_edge(f'S{i}', f'F{i+1}')
         
     node_colors = []
+    num_nodes = len(number_list)
     for node in G.nodes():
         if node.startswith("N"):
-            node_colors.append("lightblue")
+            index = int(node[1:])
+            if index >= num_nodes - answer_count:
+                node_colors.append("lightgreen")
+            else:
+                node_colors.append("lightblue")
         elif node.startswith("F"):
-            node_colors.append("lightgreen")
+            node_colors.append("lightpurple")
         elif node.startswith("S"):
             node_colors.append("lightcoral")
 
@@ -51,7 +56,7 @@ def bertingkat(number_list):
     render_explanation(plt, G, pos, labels, node_colors)
 
 
-def berpola_berulang(number_list, patterns):
+def berpola_berulang(number_list, answer_count, patterns):
     G = nx.DiGraph()
     pos = {}
 
@@ -69,9 +74,13 @@ def berpola_berulang(number_list, patterns):
         G.add_edge(f'P{i}', f'N{i+1}')
 
     node_colors = []
-    for node in G.nodes():
+    num_nodes = len(number_list)
+    for idx, node in enumerate(G.nodes()):
         if node.startswith("N"):
-            node_colors.append("lightblue")
+            if (idx >= num_nodes-answer_count):
+                node_colors.append("lightgreen")    
+            else:
+                node_colors.append("lightblue")
         elif node.startswith("P"):
             node_colors.append("lightcoral")
 
@@ -79,7 +88,7 @@ def berpola_berulang(number_list, patterns):
     render_explanation(plt, G, pos, labels, node_colors)
 
 
-def fibonacci(number_list):
+def fibonacci(number_list, answer_count):
     first_diff = [number_list[i-1] for i in range(1, len(number_list))]
 
     G = nx.DiGraph()
@@ -101,19 +110,24 @@ def fibonacci(number_list):
         G.add_edge(f'F{i}', f'N{i}')
 
     node_colors = []
+    num_nodes = len(number_list)
     for node in G.nodes():
         if node.startswith("N"):
-            node_colors.append("lightblue")
+            index = int(node[1:])
+            if index >= num_nodes - answer_count:
+                node_colors.append("lightgreen")
+            else:
+                node_colors.append("lightblue")
         elif node.startswith("F"):
-            node_colors.append("lightgreen")
+            node_colors.append("lightcoral")
 
     labels = nx.get_node_attributes(G, 'label')
     render_explanation(plt, G, pos, labels, node_colors)
     
 
-def larik(number_list, patterns):
+def larik(number_list, answer_count, patterns):
     unique_colors = [
-        "#FF9999", "#99FF99", "#9999FF", "#FFCC99", "#FF99FF", "#99FFFF"
+        "#FF9999", "#9999FF", "#FFCC99", "#FF99FF", "#99FFFF"
     ]
     random.shuffle(unique_colors)
     pattern_colors = {pattern: unique_colors[i % len(unique_colors)] for i, pattern in enumerate(patterns)}
