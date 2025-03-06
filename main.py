@@ -8,7 +8,7 @@ from explanation import bertingkat, berpola_berulang, fibonacci, larik
 
 option = st.selectbox(
     "Pilih Deret",
-    ["Fibonacci", "Larik", "Bertingkat", "Berpola Berulang"],
+    ["Aritmatika", "Fibonacci", "Larik", "Bertingkat", "Berpola Berulang", "Prima"],
     index=None,
     placeholder="Select contact method...",
 )
@@ -78,11 +78,11 @@ def render(question_type, questions, answers, patterns):
     true_answer[0].subheader(f'{question_spacer.join(map(str, smart_round_list(answers)))}')
     
     number_list = questions + answers
-    if question_type == 'Bertingkat':    
+    if question_type in ["Bertingkat"]:
         bertingkat(number_list)
-    if question_type == "Berpola Berulang":
+    if question_type in ["Berpola Berulang", "Aritmatika"]:
         berpola_berulang(number_list, patterns)
-    if question_type == "Fibonacci":
+    if question_type in ["Fibonacci"]:
         fibonacci(number_list)
 
 def render_larik(question_type, questions, answers, patterns):
@@ -125,7 +125,6 @@ def render_larik(question_type, questions, answers, patterns):
     
     number_list = questions + answers
     larik(number_list, patterns)
-    # larik(number_list, patterns)
 
 if option == "Aritmatika":
     st.subheader('Aritmatika')
@@ -156,8 +155,11 @@ if option == "Aritmatika":
                 if d.startswith(":"):
                     ar = last_number / float(d[1:])
                 number_list.append(ar)
-            
-            st.write(number_list)
+        
+            questions = flatening(number_list[:-b])
+            answers = flatening(number_list[-a:])
+            patterns = [d]
+            render("Aritmatika", questions, answers, patterns)
 
 
 if option == "Fibonacci":
@@ -358,18 +360,7 @@ if option == "Berpola Berulang":
             del answers[0]
             del answers[d:]
             
-            # # for q in questions:
-            # #     st.write(f'real: {q} | fraction: {decimal_to_fraction(q)}')
-            # data = f'<p>{question_spacer.join(map(str, decimal_list_to_fraction(questions)))}</p>'
-            # # st.write(f'<p>{question_spacer.join(map(str, decimal_list_to_fraction(questions)))}</p>', unsafe_allow_html=False)
-            # render_html_math(data)
-            
-            # data2 = f'<p>{question_spacer.join(map(str, decimal_list_to_fraction(answers)))}</p>'
-            # render_html_math(data2)
-            
-            
             questions = flatening(questions)
             answers = flatening(answers)
-            # patterns = schemes
             render("Berpola Berulang", questions, answers, schemes)
 
