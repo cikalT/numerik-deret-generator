@@ -80,7 +80,7 @@ def render(question_type, questions, answers, patterns):
     number_list = questions + answers
     if question_type in ["Bertingkat"]:
         bertingkat(number_list)
-    if question_type in ["Berpola Berulang", "Aritmatika"]:
+    if question_type in ["Berpola Berulang", "Aritmatika", "Prima"]:
         berpola_berulang(number_list, patterns)
     if question_type in ["Fibonacci"]:
         fibonacci(number_list)
@@ -364,3 +364,80 @@ if option == "Berpola Berulang":
             answers = flatening(answers)
             render("Berpola Berulang", questions, answers, schemes)
 
+if option == "Prima":
+    def get_prime_numbers(limit):
+        primes = []
+        for num in range(2, limit + 1):
+            is_prime = True
+            for divisor in range(2, int(num ** 0.5) + 1):
+                if num % divisor == 0:
+                    is_prime = False
+                    break
+            if is_prime:
+                primes.append(num)
+        return primes
+
+    def get_n_primes(start_prime, count):
+        def is_prime(n):
+            if n < 2:
+                return False
+            for i in range(2, int(n ** 0.5) + 1):
+                if n % i == 0:
+                    return False
+            return True
+
+        primes = []
+        num = start_prime
+
+        while not is_prime(num):
+            num += 1
+
+        while len(primes) < count:
+            if is_prime(num):
+                primes.append(num)
+            num += 1 
+
+        return primes
+    
+    st.subheader('Prima')
+    col1 = st.columns(2)
+    a = col1[0].text_input('Jumlah Suku')
+    b = col1[1].text_input('Jumlah Suku Jawaban')
+    col2 = st.columns(3)
+    c = col2[0].text_input('Angka Pertama')
+    f = col2[1].selectbox('Operator Prima', ['+', '-', '*'])
+    g = col2[2].selectbox('Bilangan Prima', get_prime_numbers(100))
+    # d = col2[1].text_input('Pola Aritmatika (+5 atau -3 atau *2 atau :4)')
+    
+    if a.isdigit() and b.isdigit():
+        a = int(a)
+        b = int(b)
+        c = float(c)
+        d = f'{f}{g}'
+        g = int(g)
+        
+        large_set_prime_list = get_prime_numbers(1000)
+        
+        number_list = []
+        number_list.append(c)
+        set_prime_list = get_n_primes(g, a+b)
+        if st.button("Buat Prima"):
+            
+            for i in range(a+b):
+                last_number = number_list[-1]
+                if d.startswith("+"):
+                    ar = last_number + float(set_prime_list[i])
+                if d.startswith("-"):
+                    ar = last_number - float(set_prime_list[i])
+                if d.startswith("*"):
+                    ar = last_number * float(set_prime_list[i])
+                number_list.append(ar)
+        
+            questions = flatening(number_list[:-b])
+            answers = flatening(number_list[-a:])
+            # patterns = set_prime_list
+            patterns = [f'{f}{num}' for num in set_prime_list]
+            render("Prima", questions, answers, patterns)
+                
+        
+        # st.write(prime_list)
