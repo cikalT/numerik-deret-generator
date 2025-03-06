@@ -408,7 +408,7 @@ if option == "Prima":
     col2 = st.columns(3)
     c = col2[0].text_input('Angka Pertama')
     f = col2[1].selectbox('Operator Prima', ['+', '-', '*'])
-    g = col2[2].selectbox('Bilangan Prima', get_prime_numbers(100))
+    g = col2[2].selectbox('Bilangan Prima Awal', get_prime_numbers(100))
     # d = col2[1].text_input('Pola Aritmatika (+5 atau -3 atau *2 atau :4)')
     
     if a.isdigit() and b.isdigit():

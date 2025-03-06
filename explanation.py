@@ -40,21 +40,19 @@ def bertingkat(number_list, answer_count):
         
     node_colors = []
     num_nodes = len(number_list)
-    for node in G.nodes():
+    for idx, node in enumerate(G.nodes()):
         if node.startswith("N"):
-            index = int(node[1:])
-            if index >= num_nodes - answer_count:
+            if (idx >= num_nodes-answer_count):
                 node_colors.append("lightgreen")
             else:
                 node_colors.append("lightblue")
         elif node.startswith("F"):
-            node_colors.append("lightpurple")
+            node_colors.append("peachpuff")
         elif node.startswith("S"):
             node_colors.append("lightcoral")
 
     labels = nx.get_node_attributes(G, 'label')
     render_explanation(plt, G, pos, labels, node_colors)
-
 
 def berpola_berulang(number_list, answer_count, patterns):
     G = nx.DiGraph()
@@ -127,7 +125,7 @@ def fibonacci(number_list, answer_count):
 
 def larik(number_list, answer_count, patterns):
     unique_colors = [
-        "#FF9999", "#9999FF", "#FFCC99", "#FF99FF", "#99FFFF"
+        "lightcoral", "peachpuff", "plum"
     ]
     random.shuffle(unique_colors)
     pattern_colors = {pattern: unique_colors[i % len(unique_colors)] for i, pattern in enumerate(patterns)}
@@ -146,6 +144,7 @@ def larik(number_list, answer_count, patterns):
         pos[f'N{i}'] = (i * 2, 3)
 
     node_colors = []
+    num_nodes = len(number_list)
 
     for pattern, indices in pattern_mapping.items():
         color = pattern_colors[pattern]
@@ -159,7 +158,26 @@ def larik(number_list, answer_count, patterns):
             G.add_edge(op_node, f'N{end}')
             node_colors.append(color)
 
-    node_colors = ["lightblue" if node.startswith("N") else node_colors.pop(0) for node in G.nodes()]
+    # node_colors = ["lightblue" if node.startswith("N") else node_colors.pop(0) for node in G.nodes()]
+    
+    for idx, node in enumerate(G.nodes()):
+        if node.startswith("N"):
+            if (idx >= num_nodes-answer_count):
+                node_colors.append("lightgreen")    
+            else:
+                node_colors.append("lightblue")
+        else:
+            node_colors.append(node_colors.pop(0))
+        
+    # for idx, node in enumerate(G.nodes()):
+    #     if node.startswith("N"):
+    #         if (idx >= num_nodes-answer_count):
+    #             node_colors.append("lightgreen")    
+    #         else:
+    #             node_colors.append("lightblue")
+    #     else:
+    #         node_colors.pop(0)
+    
 
     labels = nx.get_node_attributes(G, 'label')
     render_explanation(plt, G, pos, labels, node_colors)
