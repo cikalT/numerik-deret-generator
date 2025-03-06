@@ -1,5 +1,9 @@
 import random
 import streamlit as st
+from fractions import Fraction
+import networkx as nx
+import matplotlib.pyplot as plt
+from explanation import bertingkat, berpola_berulang, fibonacci, larik
 
 
 option = st.selectbox(
@@ -10,11 +14,11 @@ option = st.selectbox(
 )
 
 spacer = ',    '
-question_spacer = ',&nbsp;&nbsp;&nbsp;'
+question_spacer = ', '
 
 def convert_to_float(value):
     try:
-        return round(float(value), 1)
+        return round(float(value), 3)
     except ValueError:
         return None
 
@@ -24,10 +28,40 @@ def flatening(list):
 
 
 def smart_round_list(lst):
-    return [round(num, 0) if isinstance(num, float) and num.is_integer() else round(num, 1) if isinstance(num, float) else num for num in lst]
+    return [round(num, 0) if isinstance(num, float) and num.is_integer() else round(num, 3) if isinstance(num, float) else num for num in lst]
 
 
-def render(questions, answers):
+def decimal_to_fraction(value):
+    fraction = Fraction(value).limit_denominator()
+    return f"{fraction.numerator}/{fraction.denominator}"
+    #<p><span class="math-tex">\({fraction.numerator} \over {fraction.denominator}\)</span></p>
+    
+    # return f'<span class="math-tex">\\({fraction.numerator} \over {fraction.denominator}\\)</span>'
+
+def decimal_list_to_fraction(lst):
+    return [decimal_to_fraction(value) for value in lst]
+
+
+def render_html_math(html_text):
+    val_def = f'''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MathJax Example</title>
+        <script type="text/javascript" id="MathJax-script" async 
+            src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0-beta.4/tex-chtml.js">
+        </script>
+    </head>
+    <body>
+        {html_text}
+    </body>
+    </html>
+    '''
+    st.components.v1.html(val_def, scrolling=True)
+
+def render(question_type, questions, answers, patterns):
     def randomize_list(list):
         rand = [num + random.choice([-2, -1, 0, 1, 2]) for num in list]
         return smart_round_list(rand)
@@ -42,12 +76,19 @@ def render(questions, answers):
     seconnd_line[1].text_input(f'', value=f'd. {spacer.join(map(str, randomize_list(answers)))}', disabled=True, key='option_d')
     true_answer = st.columns(2)
     true_answer[0].subheader(f'{question_spacer.join(map(str, smart_round_list(answers)))}')
+    
+    number_list = questions + answers
+    if question_type == 'Bertingkat':    
+        bertingkat(number_list)
+    if question_type == "Berpola Berulang":
+        berpola_berulang(number_list, patterns)
+    if question_type == "Fibonacci":
+        fibonacci(number_list)
 
-
-def render_larik(questions, answers, schemes):
+def render_larik(question_type, questions, answers, patterns):
     def randomize_list_larik():
         answers_options = []
-        for index, s in enumerate(schemes):
+        for index, s in enumerate(patterns):
             if s.startswith("+"):
                 base_s = int(s[1:])
                 p_a = answers[index] + random.choice(
@@ -63,6 +104,11 @@ def render_larik(questions, answers, schemes):
                 p_a = answers[index] * random.choice(
                     [-base_s, 1, base_s, 2]
                 )
+            if s.startswith(":"):
+                base_s = int(s[1:])
+                p_a = answers[index] / random.choice(
+                    [-base_s, 1, base_s, 2]
+                )
             answers_options.append(p_a)
         return smart_round_list(answers_options)
     
@@ -76,6 +122,42 @@ def render_larik(questions, answers, schemes):
     seconnd_line[1].text_input(f'', value=f'd. {spacer.join(map(str, randomize_list_larik()))}', disabled=True, key='option_d')
     true_answer = st.columns(2)
     true_answer[0].subheader(f'{question_spacer.join(map(str, smart_round_list(answers)))}')
+    
+    number_list = questions + answers
+    larik(number_list, patterns)
+    # larik(number_list, patterns)
+
+if option == "Aritmatika":
+    st.subheader('Aritmatika')
+    col1 = st.columns(2)
+    a = col1[0].text_input('Jumlah Suku')
+    b = col1[1].text_input('Jumlah Suku Jawaban')
+    col2 = st.columns(2)
+    c = col2[0].text_input('Angka Pertama')
+    d = col2[1].text_input('Pola Aritmatika (+5 atau -3 atau *2 atau :4)')
+    
+    if a.isdigit() and b.isdigit():
+        a = int(a)
+        b = int(b)
+        c = float(c)
+        
+        number_list = []
+        number_list.append(c)
+        
+        if st.button("Buat Aritmatika"):
+            for i in range(a+b):
+                last_number = number_list[-1]
+                if d.startswith("+"):
+                    ar = last_number + float(d[1:])
+                if d.startswith("-"):
+                    ar = last_number - float(d[1:])
+                if d.startswith("*"):
+                    ar = last_number * float(d[1:])
+                if d.startswith(":"):
+                    ar = last_number / float(d[1:])
+                number_list.append(ar)
+            
+            st.write(number_list)
 
 
 if option == "Fibonacci":
@@ -96,11 +178,12 @@ if option == "Fibonacci":
     num_terms = col2[0].text_input('Jumlah Suku')
     end_count = col2[1].text_input('Jumlah Suku Jawaban')
 
-    if st.button('Buat Fibonnaci'):
+    if st.button('Buat Fibonacci'):
         a, b = generate_fibonacci(convert_to_float(first_value), convert_to_float(second_value), int(num_terms), int(end_count))
         questions = flatening(a)
         answers = flatening(b)
-        render(questions, answers)
+        patterns = []
+        render("Fibonacci", questions, answers, patterns)
         
         
 if option == "Larik":
@@ -122,10 +205,10 @@ if option == "Larik":
         final_list = []
         
         for i in range(pattern_count):
-            larik = st.columns(2)
-            value_first = larik[0].text_input(f'Angka Pertama {i+1}')
+            larik_list = st.columns(2)
+            value_first = larik_list[0].text_input(f'Angka Pertama {i+1}')
             first_values.append(value_first)
-            value_scheme = larik[1].text_input(f'Pola Larik {i+1} (+5 atau -3 atau *2)')
+            value_scheme = larik_list[1].text_input(f'Pola Larik {i+1} (+5 atau -3 atau *2 atau :4)')
             schemes.append(value_scheme)
             
         
@@ -142,6 +225,8 @@ if option == "Larik":
                     results.append(convert_to_float(first_values[i]) - int(schemes[i][1:]))
                 if schemes[i].startswith("*"):
                     results.append(convert_to_float(first_values[i]) * int(schemes[i][1:]))
+                if schemes[i].startswith(":"):
+                    results.append(convert_to_float(first_values[i]) / int(schemes[i][1:]))
             final_list.extend(results)
             
             appended_list = []
@@ -159,6 +244,10 @@ if option == "Larik":
                         appended_list.append(
                             convert_to_float(results[-(len(schemes) - i)]) * int(schemes[i][1:])
                         )
+                    if schemes[i].startswith(":"):
+                        appended_list.append(
+                            convert_to_float(results[-(len(schemes) - i)]) / int(schemes[i][1:])
+                        )
                 results.extend(appended_list)
         
             final_list.extend(appended_list)
@@ -167,7 +256,7 @@ if option == "Larik":
             
             questions = flatening(final_list)
             answers = flatening(jawaban)
-            render_larik(questions, answers, schemes)
+            render_larik("Larik", questions, answers, schemes)
 
 
 if option == "Bertingkat":
@@ -209,8 +298,8 @@ if option == "Bertingkat":
         questions, answers = generate_sequence(convert_to_float(a), convert_to_float(b), convert_to_float(c), int(d), int(e))
         questions = flatening(questions)
         answers = flatening(answers)
-        
-        render(questions, answers)
+        patterns = []
+        render("Bertingkat", questions, answers, patterns)
 
 
 if option == "Berpola Berulang":
@@ -234,7 +323,7 @@ if option == "Berpola Berulang":
         
         schemes = []
         for i in range(a):
-            value_scheme = st.text_input(f'Pola Angka {i+1} (+5 atau -3 atau *2)')
+            value_scheme = st.text_input(f'Pola Angka {i+1} (+5 atau -3 atau *2 atau :4)')
             schemes.append(value_scheme)
         
         if st.button('Buat Berpola Berhitung'):
@@ -247,6 +336,8 @@ if option == "Berpola Berulang":
                         rb = last_number - float(sch[1:])
                     if sch.startswith("*"):
                         rb = last_number * float(sch[1:])
+                    if sch.startswith(":"):
+                        rb = last_number / float(sch[1:])
                     questions.append(rb)
             
             answers = []
@@ -260,11 +351,25 @@ if option == "Berpola Berulang":
                         rb = last_number - float(sch[1:])
                     if sch.startswith("*"):
                         rb = last_number * float(sch[1:])
+                    if sch.startswith(":"):
+                        rb = last_number / float(sch[1:])
                     answers.append(rb)
             
             del answers[0]
-            del answers[-d:]
+            del answers[d:]
+            
+            # # for q in questions:
+            # #     st.write(f'real: {q} | fraction: {decimal_to_fraction(q)}')
+            # data = f'<p>{question_spacer.join(map(str, decimal_list_to_fraction(questions)))}</p>'
+            # # st.write(f'<p>{question_spacer.join(map(str, decimal_list_to_fraction(questions)))}</p>', unsafe_allow_html=False)
+            # render_html_math(data)
+            
+            # data2 = f'<p>{question_spacer.join(map(str, decimal_list_to_fraction(answers)))}</p>'
+            # render_html_math(data2)
+            
             
             questions = flatening(questions)
             answers = flatening(answers)
-            render(questions, answers)
+            # patterns = schemes
+            render("Berpola Berulang", questions, answers, schemes)
+
