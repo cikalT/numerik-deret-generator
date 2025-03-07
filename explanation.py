@@ -85,6 +85,7 @@ def berpola_berulang(number_list, answer_count, patterns):
             node_colors.append("lightcoral")
 
     labels = nx.get_node_attributes(G, 'label')
+    fig, ax = plt.subplots(figsize=(10, 6))
     render_explanation(plt, G, pos, labels, node_colors)
 
 
@@ -122,6 +123,7 @@ def fibonacci(number_list, answer_count):
             node_colors.append("lightcoral")
 
     labels = nx.get_node_attributes(G, 'label')
+    fig, ax = plt.subplots(figsize=(10, 6))
     render_explanation(plt, G, pos, labels, node_colors)
     
 
@@ -182,4 +184,5 @@ def larik(number_list, answer_count, patterns):
     
 
     labels = nx.get_node_attributes(G, 'label')
+    fig, ax = plt.subplots(figsize=(10, 6))
     render_explanation(plt, G, pos, labels, node_colors)
