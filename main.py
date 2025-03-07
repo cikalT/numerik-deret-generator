@@ -4,7 +4,7 @@ from counting import counting_main
 
 type_q = st.selectbox(
     "Pilih Tentang...",
-    ["Numerik Deret"],
+    ["Numerik Deret", "Numerik Berhitung"],
     index=None,
 )
 

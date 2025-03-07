@@ -170,7 +170,6 @@ def larik(number_list, answer_count, patterns):
             G.add_edge(op_node, f'N{end}')
             node_colors.append(color)
 
-    # node_colors = ["lightblue" if node.startswith("N") else node_colors.pop(0) for node in G.nodes()]
     
     for idx, node in enumerate(G.nodes()):
         if node.startswith("N"):
@@ -180,17 +179,54 @@ def larik(number_list, answer_count, patterns):
                 node_colors.append("lightblue")
         else:
             node_colors.append(node_colors.pop(0))
-        
-    # for idx, node in enumerate(G.nodes()):
-    #     if node.startswith("N"):
-    #         if (idx >= num_nodes-answer_count):
-    #             node_colors.append("lightgreen")    
-    #         else:
-    #             node_colors.append("lightblue")
-    #     else:
-    #         node_colors.pop(0)
-    
 
     labels = nx.get_node_attributes(G, 'label')
     fig, ax = plt.subplots(figsize=(10, 6))
+    render_explanation(plt, G, pos, labels, node_colors)
+
+def to_superscript(num):
+    """Convert a number to its superscript equivalent, including numbers 100+."""
+    superscript_map = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+    return str(num).translate(superscript_map)
+
+def pangkat(number_list, answer_count, root_list, angka_pangkat, selisih):
+    G = nx.DiGraph()
+    pos = {}
+
+    for i, num in enumerate(number_list):
+        G.add_node(f'N{i}', label=str(num))
+        pos[f'N{i}'] = (i * 3, 3)
+
+    for i, root in enumerate(root_list):
+        G.add_node(f'R{i}', label=f"{root}{to_superscript(angka_pangkat)}")
+        pos[f'R{i}'] = (i * 3, 2)
+
+    for i in range(len(root_list) - 1):
+        G.add_node(f'S{i}', label=f"+{selisih}")
+        pos[f'S{i}'] = (i * 3 + 1.5, 1)
+
+    for i in range(len(number_list)):
+        G.add_edge(f'N{i}', f'R{i}')
+
+    for i in range(len(root_list) - 1):
+        G.add_edge(f'R{i}', f'S{i}')
+        G.add_edge(f'S{i}', f'R{i+1}')
+
+    labels = nx.get_node_attributes(G, 'label')
+
+    node_colors = []
+    num_nodes = len(number_list)
+
+    for node in G.nodes():
+        if node.startswith("N"):
+            index = int(node[1:])
+            if index >= num_nodes - answer_count:
+                node_colors.append("lightgreen")
+            else:
+                node_colors.append("lightblue")
+        elif node.startswith("R"):
+            node_colors.append("peachpuff")
+        elif node.startswith("S"):
+            node_colors.append("lightcoral")
+
     render_explanation(plt, G, pos, labels, node_colors)

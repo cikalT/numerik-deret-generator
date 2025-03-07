@@ -1,7 +1,7 @@
 import random
 import streamlit as st
 from fractions import Fraction
-from explanation import bertingkat, berpola_berulang, fibonacci, larik
+from explanation import bertingkat, berpola_berulang, fibonacci, larik, pangkat
 
 spacer = ',    '
 question_spacer = ', '
@@ -9,7 +9,7 @@ question_spacer = ', '
 def numerical_main():
     option = st.selectbox(
         "Pilih Deret",
-        ["Aritmatika", "Fibonacci", "Larik", "Bertingkat", "Berpola Berulang", "Prima"],
+        ["Aritmatika", "Fibonacci", "Larik", "Bertingkat", "Berpola Berulang", "Prima", "Pangkat"],
         index=None,
         placeholder="Select contact method...",
     )
@@ -254,6 +254,7 @@ def numerical_main():
                 answers = flatening(answers)
                 render("Berpola Berulang", questions, answers, schemes)
 
+
     if option == "Prima":
         def get_prime_numbers(limit):
             primes = []
@@ -329,6 +330,41 @@ def numerical_main():
                 render("Prima", questions, answers, patterns)
                     
 
+    if option == "Pangkat":
+        st.subheader('Pangkat')
+        col_b = st.columns(2)
+        d = col_b[0].text_input('Jumlah Suku')
+        e = col_b[1].text_input('Jumlah Suku Jawaban')
+        
+        col_a = st.columns(3)
+        a = col_a[0].text_input('Angka Pertama yang Dipangkatkan')
+        b = col_a[1].text_input('Pangkat')
+        c = col_a[2].text_input('Selisih Antar Pangkat')
+        
+        if a.isdigit() and b.isdigit() and c.isdigit() and d.isdigit() and e.isdigit():
+            a = int(a)
+            b = int(b)
+            c = int(c)
+            d = int(d)
+            e = int(e)
+            
+            number_list = []
+            root_list = []
+            
+            for idx, i in enumerate(range(d+e)):
+                if idx == 0:
+                    number_list.append(pow(a, b))
+                    root_list.append(a)
+                else:
+                    
+                    last_number = root_list[-1] + c
+                    number_list.append(pow(last_number, b))
+                    root_list.append(last_number)
+            
+            questions = number_list[:-e]
+            answers = number_list[-e:]
+            
+            render_pangkat("Pangkat", questions, answers, root_list, b, c)
     
 
 def convert_to_float(value):
@@ -440,3 +476,23 @@ def render_larik(question_type, questions, answers, patterns):
     
     number_list = questions + answers
     larik(number_list, len(answers), patterns)
+
+def render_pangkat(question_type, questions, answers, root_list, angka_pangkat, selisih):
+    def randomize_list(list):
+        rand = [num + random.choice([-2, -1, 0, 1, 2]) for num in list]
+        return smart_round_list(rand)
+    
+    st.subheader(f'{question_spacer.join(map(str, smart_round_list(questions)))}, ...')
+    st.write('Opsi:')
+    first_line = st.columns(2)
+    first_line[0].text_input(f'', value=f'a. {spacer.join(map(str, randomize_list(answers)))}', disabled=True, key='option_a')
+    first_line[1].text_input(f'', value=f'b. {spacer.join(map(str, randomize_list(answers)))}', disabled=True, key='option_b')
+    seconnd_line = st.columns(2)
+    seconnd_line[0].text_input(f'', value=f'c. {spacer.join(map(str, randomize_list(answers)))}', disabled=True, key='option_c')
+    seconnd_line[1].text_input(f'', value=f'd. {spacer.join(map(str, randomize_list(answers)))}', disabled=True, key='option_d')
+    true_answer = st.columns(2)
+    true_answer[0].subheader(f'{question_spacer.join(map(str, smart_round_list(answers)))}')
+    
+    number_list = questions + answers
+    
+    pangkat(number_list, len(answers), root_list, angka_pangkat, selisih)
