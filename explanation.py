@@ -1,7 +1,7 @@
 import random
 import networkx as nx
 import streamlit as st
-import matplotlib.pyplot as plt
+import matplotlib as plt
 
 def render_explanation(plt, G, pos, labels, node_colors):
     plt.figure(figsize=(10, 4))
