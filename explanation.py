@@ -4,10 +4,18 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 def render_explanation(plt_in, G, pos, labels, node_colors):
-    plt_in.figure(figsize=(10, 4))
-    nx.draw(G, pos, with_labels=True, labels=labels, node_size=2000, node_color=node_colors, 
-            edge_color="gray", font_size=10, font_weight="bold")
-    st.pyplot(plt_in)
+    fig, ax = plt_in.subplots(figsize=(10, 4.8))
+
+    ax.set_facecolor("none")
+    fig.patch.set_alpha(0)
+
+    nx.draw(
+        G, pos, ax=ax, with_labels=True, labels=labels,
+        node_size=2000, node_color=node_colors, edge_color="gray",
+        font_size=10, font_weight="bold"
+    )
+
+    st.pyplot(fig)
 
 def bertingkat(number_list, answer_count):
     first_diff = [number_list[i] - number_list[i-1] for i in range(1, len(number_list))]
