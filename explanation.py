@@ -8,7 +8,7 @@ def render_explanation(plt_in, G, pos, labels, node_colors):
     nx.draw(G, pos, with_labels=True, labels=labels, node_size=2000, node_color=node_colors, 
             edge_color="gray", font_size=10, font_weight="bold")
     # plt.title("Number Pattern Explanation")
-    st.pyplot(plt)
+    st.pyplot(plt_in)
 
 def bertingkat(number_list, answer_count):
     first_diff = [number_list[i] - number_list[i-1] for i in range(1, len(number_list))]
