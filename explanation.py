@@ -1,13 +1,12 @@
 import random
 import networkx as nx
 import streamlit as st
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 def render_explanation(plt_in, G, pos, labels, node_colors):
     plt_in.figure(figsize=(10, 4))
     nx.draw(G, pos, with_labels=True, labels=labels, node_size=2000, node_color=node_colors, 
             edge_color="gray", font_size=10, font_weight="bold")
-    # plt.title("Number Pattern Explanation")
     st.pyplot(plt_in)
 
 def bertingkat(number_list, answer_count):
@@ -52,6 +51,9 @@ def bertingkat(number_list, answer_count):
             node_colors.append("lightcoral")
 
     labels = nx.get_node_attributes(G, 'label')
+    fig, ax = plt.subplots(figsize=(10, 6))
+    # nx.draw(G, pos, ax=ax, with_labels=True, labels=labels, node_color=node_colors, node_size=2000, edge_color="gray", font_size=10, font_weight="bold")
+    # st.pyplot(fig)
     render_explanation(plt, G, pos, labels, node_colors)
 
 def berpola_berulang(number_list, answer_count, patterns):
