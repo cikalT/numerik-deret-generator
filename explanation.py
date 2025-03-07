@@ -3,8 +3,8 @@ import networkx as nx
 import streamlit as st
 import matplotlib as plt
 
-def render_explanation(plt, G, pos, labels, node_colors):
-    plt.figure(figsize=(10, 4))
+def render_explanation(plt_in, G, pos, labels, node_colors):
+    plt_in.figure(figsize=(10, 4))
     nx.draw(G, pos, with_labels=True, labels=labels, node_size=2000, node_color=node_colors, 
             edge_color="gray", font_size=10, font_weight="bold")
     # plt.title("Number Pattern Explanation")
